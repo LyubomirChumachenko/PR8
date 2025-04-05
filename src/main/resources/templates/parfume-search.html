@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск парфюма</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Магазин парфюмерии</h1>
+    <ul>
+        <li><a href="/parfume/new">1. Добавить парфюм</a></li>
+        <li><a href="/parfume">2. Просмотр всего парфюма</a></li>
+        <li><a href="/parfume/search">3. Поиск парфюма по типу</a></li>
+        <li><a href="/parfume/exit">4. Выход</a></li>
+    </ul>
+    <h2>Поиск парфюма</h2>
+
+
+
+
+    <form id="searchForm">
+        <div>
+            <label>Тип парфюма:</label>
+            <input type="text" id="searchType" th:value="${searchType}" />
+        </div>
+        <button type="button" onclick="searchParfumes()">Поиск</button>
+    </form>
+
+    <div th:if="${parfumeList.isEmpty()}">
+        <p>Ничего не найдено.</p>
+    </div>
+
+    <div id="results">
+        <table th:if="${not parfumeList.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Тип</th>
+                    <th>Описание</th>
+                    <th>Вес</th>
+                    <th>Цена</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="parfume : ${parfumeList}">
+                    <td th:text="${parfume.id}"></td>
+                    <td th:text="${parfume.name}"></td>
+                    <td th:text="${parfume.type}"></td>
+                    <td th:text="${parfume.description}"></td>
+                    <td th:text="${parfume.weight}"></td>
+                    <td th:text="${parfume.price}"></td>
+                    <td>
+                        <a th:href="@{/parfume/edit/{id}(id=${parfume.id})}">Редактировать</a>
+                        <button th:onclick="'deleteParfume(' + ${parfume.id} + ')'">Удалить</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <a href="/">Закрыть поиск</a>
+
+
+    <script>
+        function searchParfumes() {
+            var searchType = $('#searchType').val();
+            
+            $.ajax({
+                url: '/api/parfume/search',
+                type: 'GET',
+                data: { type: searchType },
+                success: function(data) {
+                    // Обновить таблицу с результатами поиска
+                    updateResultsTable(data);
+                },
+                error: function() {
+                    alert('Ошибка при поиске');
+                }
+            });
+        }
+        function updateResultsTable(parfumes) {
+            var tbody = $('#results tbody');
+            tbody.empty();
+            
+            parfumes.forEach(function(parfume) {
+                var row = $('<tr>');
+                row.append($('<td>').text(parfume.id));
+                row.append($('<td>').text(parfume.name)); 
+                row.append($('<td>').text(parfume.type));
+                row.append($('<td>').text(parfume.description));
+                row.append($('<td>').text(parfume.weight));
+                row.append($('<td>').text(parfume.price));
+                
+                var actionsCell = $('<td>');
+                actionsCell.append($('<a>').attr('href', '/parfume/edit/' + parfume.id).text('Редактировать'));
+                actionsCell.append(' ');
+                actionsCell.append($('<button>').attr('onclick', 'deleteParfume(' + parfume.id + ')').text('Удалить'));
+                
+                row.append(actionsCell);
+                tbody.append(row);
+            });
+        }
+        function deleteParfume(id) {
+            if (confirm('Вы уверены, что хотите удалить этот парфюм?')) {
+                $.ajax({
+                    url: '/api/parfume/' + id,
+                    type: 'DELETE',
+                    success: function() {
+                        alert('Парфюм успешно удален');
+                        // Обновляем таблицу
+                        searchParfumes();
+                    },
+                    error: function() {
+                        alert('Ошибка при удалении парфюма');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+

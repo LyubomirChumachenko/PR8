@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить новый парфюм</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Магазин парфюмерии</h1>
+    <ul>
+        <li><a href="/parfume/new">1. Добавить парфюм</a></li>
+        <li><a href="/parfume">2. Просмотр всего парфюма</a></li>
+        <li><a href="/parfume/search">3. Поиск парфюма по типу</a></li>
+        <li><a href="/parfume/exit">4. Выход</a></li>
+    </ul>
+    <h2>Добавить новый парфюм</h2>
+    <form id="addForm" th:object="${parfume}">
+        <div>
+            <label>Название:</label>
+            <input type="text" id="name" th:field="*{name}" required />
+        </div>
+        <div>
+            <label>Тип:</label>
+            <input type="text" id="type" th:field="*{type}" required />
+        </div>
+        <div>
+            <label>Описание:</label>
+            <input type="text" id="description" th:field="*{description}" required />
+        </div>
+        <div>
+            <label>Вес:</label>
+            <input type="number" id="weight" th:field="*{weight}" required />
+        </div>
+        <div>
+            <label>Цена:</label>
+            <input type="number" step="0.01" id="price" th:field="*{price}" required />
+        </div>
+        
+        <button type="button" onclick="createParfume()">Сохранить</button>
+        <a th:href="@{/parfume}">Отмена</a>
+    </form>
+    <a href="/">Закрыть меню добавления парфюма</a>
+
+
+
+    <script>
+        function createParfume() {
+            var parfumeData = {
+                name: $('#name').val(),
+                type: $('#type').val(),
+                description: $('#description').val(),
+                weight: $('#weight').val(),
+                price: $('#price').val()
+            };
+
+            $.ajax({
+                url: '/api/parfume',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(parfumeData),
+                success: function() {
+                    window.location.href = '/parfume';
+                },
+                error: function(xhr) {
+                    alert('Ошибка при добавлении: ' + xhr.responseText);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+

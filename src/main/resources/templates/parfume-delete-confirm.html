@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалить парфюм</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Магазин парфюмерии</h1>
+    <ul>
+        <li><a href="/parfume/new">1. Добавить парфюм</a></li>
+        <li><a href="/parfume">2. Просмотр всего парфюма</a></li>
+        <li><a href="/parfume/search">3. Поиск парфюма по типу</a></li>
+        <li><a href="/parfume/exit">4. Выход</a></li>
+    </ul>
+
+
+    <h2>Удалить парфюм</h2>
+    <div>
+        <p>Вы уверены, что хотите удалить следующий парфюм?</p>
+        
+        <div>
+            <strong>ID:</strong> <span th:text="${parfume.id}"></span>
+        </div>
+        <div>
+            <strong>Название:</strong> <span th:text="${parfume.name}"></span>
+        </div>
+        <div>
+            <strong>Тип:</strong> <span th:text="${parfume.type}"></span>
+        </div>
+        <div>
+            <strong>Описание:</strong> <span th:text="${parfume.description}"></span>
+        </div>
+        <div>
+            <strong>Вес:</strong> <span th:text="${parfume.weight}"></span>
+        </div>
+        <div>
+            <strong>Цена:</strong> <span th:text="${parfume.price}"></span>
+        </div>
+        
+        <button th:onclick="'deleteParfume(' + ${parfume.id} + ')'">Удалить</button>
+        <a th:href="@{/parfume}">Отмена</a>
+    </div>
+    <a href="/">Закрыть меню удаления парфюма</a>
+
+
+
+    
+    <script>
+        function deleteParfume(id) {
+            $.ajax({
+                url: '/api/parfume/' + id,
+                type: 'DELETE',
+                success: function() {
+                    alert('Парфюм успешно удален');
+                    window.location.href = '/parfume';
+                },
+                error: function() {
+                    alert('Ошибка при удалении парфюма');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список всего парфюма</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Магазин парфюмерии</h1>
+    <ul>
+        <li><a href="/parfume/new">1. Добавить парфюм</a></li>
+        <li><a href="/parfume">2. Просмотр всего парфюма</a></li>
+        <li><a href="/parfume/search">3. Поиск парфюма по типу</a></li>
+        <li><a href="/parfume/exit">4. Выход</a></li>
+    </ul>
+    <h2>Список парфюма</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Название</th>
+                <th>Тип</th>
+                <th>Описание</th>
+                <th>Вес</th>
+                <th>Цена</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="parfume : ${parfumes}" th:id="'parfume-row-' + ${parfume.id}">
+                <td th:text="${parfume.id}">id</td>
+                <td th:text="${parfume.name}">Название</td>
+                <td th:text="${parfume.type}">Тип</td>
+                <td th:text="${parfume.description}">Описание</td>
+                <td th:text="${parfume.weight}">Вес</td>
+                <td th:text="${parfume.price}">Цена</td>
+                <td>
+                    <button th:onclick="'purchaseParfume(' + ${parfume.id} + ')'">Купить</button>
+                    <a th:href="@{/parfume/edit/{id}(id=${parfume.id})}">Редактировать</a>
+                    <a th:onclick="'deleteParfume(' + ${parfume.id} + ')'">Удалить</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/">Закрыть список парфюма</a>
+
+    <script>
+        function purchaseParfume(id) {
+            if (confirm('Вы уверены, что хотите купить этот парфюм?')) {
+                $.ajax({
+                    url: '/api/parfume/' + id + '/purchase',
+                    type: 'POST',
+                    success: function(response) {
+                        // Показываем уведомление о успешной покупке
+                        alert(response);
+                        
+                        // Удаляем строку из таблицы без перезагрузки страницы
+                        $('#parfume-row-' + id).fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                    },
+                    error: function(xhr) {
+                        alert('Ошибка при оформлении заказа: ' + xhr.responseText);
+                    }
+                });
+            }
+        }
+        
+        function deleteParfume(id) {
+            if (confirm('Вы уверены, что хотите удалить этот парфюм?')) {
+                $.ajax({
+                    url: '/api/parfume/' + id,
+                    type: 'DELETE',
+                    success: function() {
+                        alert('Парфюм успешно удален');
+                        // Удаляем строку из таблицы без перезагрузки страницы
+                        $('#parfume-row-' + id).fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                    },
+                    error: function() {
+                        alert('Ошибка при удалении парфюма');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
