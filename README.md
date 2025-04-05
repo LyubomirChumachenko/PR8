@@ -42,6 +42,7 @@ Linux/Mac:
 ./[ваш-путь-к-maven]/bin/mvn install -f ./pom.xml
 
 2.Чтобы запустить программу после сборки введите команду:
+
 java -jar target/parfume-app-0.0.1-SNAPSHOT.jar --spring.config.location=classpath:/application.properties
 
 
